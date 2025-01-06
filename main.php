@@ -21,7 +21,7 @@
             text-align: center;
         }
 
-        form {
+        .form2 {
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
@@ -94,54 +94,93 @@
         .result p {
             color: #555;
         }
+
+        .back-button {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .back-button input {
+            background-color: #008CBA;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .back-button input:hover {
+            background-color: #007bb5;
+        }
+
+        .back-form {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .back-form input {
+            background-color: #008CBA;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .back-form input:hover {
+            background-color: #007bb5;
+        }
+
     </style>
 </head>
 <body>
 
     <?php
-    // ตรวจสอบว่ามีการส่งฟอร์มหรือไม่
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        // รับข้อมูลที่กรอกเข้ามา
-        $name = $_POST['fname'];
-        $surname = $_POST['Iname'];
-        $birthday = $_POST['birthday'];
-        $sex = $_POST['sex'];
-        $username = $_POST['username'];
-        $pwd = $_POST['pwd'];
+        // รับข้อมูลและกรอง XSS
+        $name = htmlspecialchars($_POST['fname']);
+        $surname = htmlspecialchars($_POST['lname']);
+        $birthday = htmlspecialchars($_POST['birthday']);
+        $sex = isset($_POST['sex']) ? htmlspecialchars($_POST['sex']) : 'ไม่ระบุ';
+        $username = htmlspecialchars($_POST['username']);
+        $pwd = htmlspecialchars($_POST['pwd']);
 
-        // แปลงค่าของเพศ ('m' หรือ 'f') เป็นข้อความภาษาไทย
-        if ($sex == 'm') {
-            $sexText = 'ชาย';
-        } elseif ($sex == 'f') {
-            $sexText = 'หญิง';
-        } else {
-            $sexText = 'ไม่ระบุ';
+        // แปลงค่าของเพศเป็นข้อความภาษาไทย
+        switch ($sex) {
+            case 'm':
+                $sexText = 'ชาย';
+                break;
+            case 'f':
+                $sexText = 'หญิง';
+                break;
+            case 'other':
+            default:
+                $sexText = 'ไม่ระบุ';
+                break;
         }
 
-        // แสดงข้อมูลที่กรอก
         echo "<div class='result'>";
         echo "<h3>ข้อมูลที่คุณส่งมา</h3>";
-        echo "<p>สวัสดีคุณ $name $surname </p>";
+        echo "<p>สวัสดีคุณ $name $surname</p>";
         echo "<p>วันเกิด : $birthday</p>";
         echo "<p>เพศ : $sexText</p>";
         echo "<p>ชื่อเข้าระบบ: $username</p>";
         echo "<p>รหัสผ่าน: $pwd</p>";
-        
-        // ปุ่มกลับไปยังหน้า main.php
-        echo "<form action='main.php' method='get'>
-                <input type='submit' value='กลับไปยังหน้าแรก'>
-              </form>";
+        echo "<form action='main.php' method='get' class='back-form'>";
+        echo "<input type='submit' value='กลับไปยังหน้าแรก'>";
+        echo "</form>";
         echo "</div>";
     } else {
     ?>
 
-    <h2>ฟอร์มสมัครสมาชิก</h2>
-    <form action="main.php" method="POST">
+    <form class="form2" action="" method="POST">
+        <h2 style="text-align: left; font-size: 24px; color: #333;">ฟอร์มสมัครสมาชิก</h2>
         <label for="fname">ชื่อ:</label>
         <input type="text" id="fname" name="fname" required>
 
-        <label for="Iname">นามสกุล:</label>
-        <input type="text" id="Iname" name="Iname" required>
+        <label for="lname">นามสกุล:</label>
+        <input type="text" id="lname" name="lname" required>
 
         <label for="birthday">วันเกิด:</label>
         <input type="date" id="birthday" name="birthday" required>
